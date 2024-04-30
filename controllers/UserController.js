@@ -57,9 +57,10 @@ module.exports.removeFromLikedMovies = async (req, res) => {
       );
       return res.json({ msg:"Movie successfully removed.", movies: likedMovies });
     }
+    else return res.json({ msg: "User with given email not found." });
   }
-  catch (error) {
-    // console.log(error);
+      catch (error) {
+    console.log(error);
     return res.json({ msg: "Error deleting movie to the liked list." });
   }
 };

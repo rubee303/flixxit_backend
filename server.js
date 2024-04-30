@@ -6,7 +6,8 @@ const User = require("./models/UserModel");
 
  const app =express();
 
- app.use(cors());
+//  app.use(cors());
+app.use(cors({origin: "*"}))
  app.use(express.json());
 
 mongoose.connect("mongodb+srv://rubee303:Dm0pPpAP4P1xyXQk@cluster0.vnl4x8t.mongodb.net/flixxit",{
