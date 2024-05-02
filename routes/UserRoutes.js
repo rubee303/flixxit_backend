@@ -3,7 +3,7 @@ const { addToLikedMovies, getLikedMovies, removeFromLikedMovies } = require("../
 const router = require("express").Router();
 
 router.post("/add", addToLikedMovies);
-router.post("/liked/:email", getLikedMovies);
+router.post("/liked", getLikedMovies);
 router.put("/delete", removeFromLikedMovies);
 
 

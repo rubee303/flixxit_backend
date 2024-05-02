@@ -37,30 +37,53 @@ module.exports.getLikedMovies = async (req, res) => {
   }
 };
 
+// module.exports.removeFromLikedMovies = async (req, res) => {
+//   try {
+//     const { email, movieId } = req.body;
+//     const user = await User.findOne({ email });
+//     if (user) {
+//       const { likedMovies } = user;
+//       const movieIndex = likedMovies.findIndex(({ id }) => id === movieId);
+//       if (!movieIndex) {
+//         res.status(400).send({ msg: "Movie not found." });
+//       }
+//       likedMovies.splice(movieIndex, 1);
+//       await User.findByIdAndUpdate(
+//         user._id,
+//         {
+//           likedMovies,
+//         },
+//         { new: true }
+//       );
+//       return res.json({ msg:"Movie successfully removed.", movies: likedMovies });
+//     }
+//     else return res.json({ msg: "User with given email not found." });
+//   }
+//       catch (error) {
+//     console.log(error);
+//     return res.json({ msg: "Error deleting movie to the liked list." });
+//   }
+// };
 module.exports.removeFromLikedMovies = async (req, res) => {
   try {
     const { email, movieId } = req.body;
     const user = await User.findOne({ email });
-    if (user) {
-      const { likedMovies } = user;
-      const movieIndex = likedMovies.findIndex(({ id }) => id === movieId);
-      if (!movieIndex) {
-        res.status(400).send({ msg: "Movie not found." });
-      }
-      likedMovies.splice(movieIndex, 1);
-      await User.findByIdAndUpdate(
-        user._id,
-        {
-          likedMovies,
-        },
-        { new: true }
-      );
-      return res.json({ msg:"Movie successfully removed.", movies: likedMovies });
+    if (!user) {
+      return res.status(400).json({ msg: "User with given email not found." });
     }
-    else return res.json({ msg: "User with given email not found." });
-  }
-      catch (error) {
-    console.log(error);
-    return res.json({ msg: "Error deleting movie to the liked list." });
+    const { likedMovies } = user;
+    const movieIndex = likedMovies.findIndex(({ id }) => id === movieId);
+    if (movieIndex === -1) {
+      return res.status(400).json({ msg: "Movie not found." });
+    }
+    // Create a new array without the movie to be removed
+    const updatedLikedMovies = likedMovies.filter(movie => movie.id !== movieId);
+    // Update the user's likedMovies array
+    user.likedMovies = updatedLikedMovies;
+    await user.save();
+    return res.json({ msg: "Movie successfully removed.", movies: updatedLikedMovies });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Error deleting movie from the liked list." });
   }
 };
